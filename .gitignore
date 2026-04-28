@@ -6,3 +6,4 @@ pycache/
 dist/
 build/
 *.egg-info/
+/.hack-assembler-tabspaces-session.el
