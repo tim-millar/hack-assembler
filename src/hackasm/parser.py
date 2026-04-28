@@ -19,7 +19,11 @@ class Parser:
         return s == "" or s.startswith("//") or s.startswith("\n") or s[:1].isspace()
 
     def _programme(self):
-        return [line for line in self._file_contents if not Parser._ignore_line(line)]
+        return [
+            line.strip()
+            for line in self._file_contents
+            if not Parser._ignore_line(line.strip())
+        ]
 
     def hasMoreCommands(self):
         if self.cursor is None:
