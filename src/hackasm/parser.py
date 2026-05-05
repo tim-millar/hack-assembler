@@ -30,3 +30,9 @@ class Parser:
             return len(self._programme()) > 0
         else:
             return self.cursor < len(self._programme()) - 1
+
+    def advance(self):
+        if self.cursor is None:
+            self.cursor = 0
+        else:
+            self.cursor += 1
