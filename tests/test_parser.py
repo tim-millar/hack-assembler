@@ -190,3 +190,65 @@ def test_advance_counts_commands_not_raw_lines(tmp_path: Path) -> None:
 
     parser.advance()
     assert parser.hasMoreCommands() is False
+
+
+def test_command_type_for_a_command(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "@2\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.commandType() == "A_COMMAND"
+
+
+def test_command_type_for_c_command(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D=A\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.commandType() == "C_COMMAND"
+
+
+def test_command_type_for_l_command(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "(LOOP)\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.commandType() == "L_COMMAND"
+
+
+def test_command_type_tracks_current_command_after_multiple_advances(
+    tmp_path: Path,
+) -> None:
+    asm_file = write_asm(
+        tmp_path,
+        "@2\n" "D=A\n" "(LOOP)\n",
+    )
+
+    parser = Parser(asm_file)
+
+    parser.advance()
+    assert parser.commandType() == "A_COMMAND"
+
+    parser.advance()
+    assert parser.commandType() == "C_COMMAND"
+
+    parser.advance()
+    assert parser.commandType() == "L_COMMAND"
+
+
+def test_command_type_ignores_blank_lines_and_comments(tmp_path: Path) -> None:
+    asm_file = write_asm(
+        tmp_path,
+        "\n" "// comment\n" "@2\n" "\n" "D=A\n",
+    )
+
+    parser = Parser(asm_file)
+
+    parser.advance()
+    assert parser.commandType() == "A_COMMAND"
+
+    parser.advance()
+    assert parser.commandType() == "C_COMMAND"

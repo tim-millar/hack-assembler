@@ -1,5 +1,9 @@
 from functools import cached_property
 
+A_COMMAND = "A_COMMAND"
+C_COMMAND = "C_COMMAND"
+L_COMMAND = "L_COMMAND"
+
 
 class Parser:
     def __init__(self, file):
@@ -36,3 +40,13 @@ class Parser:
             self.cursor = 0
         else:
             self.cursor += 1
+
+    def commandType(self):
+        current = self._programme()[self.cursor]
+
+        if current.startswith("@"):
+            return A_COMMAND
+        if current.startswith("(") and current.endswith(")"):
+            return L_COMMAND
+        if all(c.isalpha() or c in "-+!01&;=" for c in current):
+            return C_COMMAND
