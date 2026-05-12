@@ -29,19 +29,19 @@ class Parser:
             if not Parser._ignore_line(line.strip())
         ]
 
-    def hasMoreCommands(self):
+    def hasMoreCommands(self) -> bool:
         if self.cursor is None:
             return len(self._programme()) > 0
         else:
             return self.cursor < len(self._programme()) - 1
 
-    def advance(self):
+    def advance(self) -> int:
         if self.cursor is None:
             self.cursor = 0
         else:
             self.cursor += 1
 
-    def commandType(self):
+    def commandType(self) -> str:
         current = self._programme()[self.cursor]
 
         if current.startswith("@"):
@@ -50,3 +50,11 @@ class Parser:
             return L_COMMAND
         if all(c.isalpha() or c in "-+!01&;=" for c in current):
             return C_COMMAND
+
+    def symbol(self) -> str | None:
+        current = self._programme()[self.cursor]
+
+        if self.commandType() == A_COMMAND:
+            return current[1:]
+        if self.commandType() == L_COMMAND:
+            return current[1:-1]

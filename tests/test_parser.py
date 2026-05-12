@@ -252,3 +252,65 @@ def test_command_type_ignores_blank_lines_and_comments(tmp_path: Path) -> None:
 
     parser.advance()
     assert parser.commandType() == "C_COMMAND"
+
+
+def test_symbol_for_a_command_with_number(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "@2\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.symbol() == "2"
+
+
+def test_symbol_for_a_command_with_symbol_name(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "@counter\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.symbol() == "counter"
+
+
+def test_symbol_for_l_command(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "(LOOP)\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.symbol() == "LOOP"
+
+
+def test_symbol_tracks_current_command_after_multiple_advances(
+    tmp_path: Path,
+) -> None:
+    asm_file = write_asm(
+        tmp_path,
+        "@i\n" "(LOOP)\n" "@sum\n",
+    )
+
+    parser = Parser(asm_file)
+
+    parser.advance()
+    assert parser.symbol() == "i"
+
+    parser.advance()
+    assert parser.symbol() == "LOOP"
+
+    parser.advance()
+    assert parser.symbol() == "sum"
+
+
+def test_symbol_ignores_surrounding_whitespace(tmp_path: Path) -> None:
+    asm_file = write_asm(
+        tmp_path,
+        "   @counter   \n" "   (LOOP)   \n",
+    )
+
+    parser = Parser(asm_file)
+
+    parser.advance()
+    assert parser.symbol() == "counter"
+
+    parser.advance()
+    assert parser.symbol() == "LOOP"
