@@ -24,7 +24,7 @@ class Parser:
 
     def _programme(self):
         return [
-            line.strip()
+            line.strip().replace(" ", "")
             for line in self._file_contents
             if not Parser._ignore_line(line.strip())
         ]
@@ -58,3 +58,14 @@ class Parser:
             return current[1:]
         if self.commandType() == L_COMMAND:
             return current[1:-1]
+
+    def dest(self) -> str | None:
+        current_command = self._programme()[self.cursor]
+
+        if "=" not in current_command:
+            return None
+
+        return current_command.split("=")[0]
+
+        if result:
+            return result.group(1)

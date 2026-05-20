@@ -305,3 +305,57 @@ def test_symbol_ignores_surrounding_whitespace(tmp_path: Path) -> None:
 
     parser.advance()
     assert parser.symbol() == "LOOP"
+
+
+def test_dest_returns_dest_part_when_present(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D=A\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.dest() == "D"
+
+
+def test_dest_returns_multiple_dest_registers(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "MD=D+1\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.dest() == "MD"
+
+
+def test_dest_returns_none_when_no_dest_part(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D;JGT\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.dest() is None
+
+
+def test_dest_tracks_current_command_after_multiple_advances(tmp_path: Path) -> None:
+    asm_file = write_asm(
+        tmp_path,
+        "D=A\n" "M=D\n" "0;JMP\n",
+    )
+
+    parser = Parser(asm_file)
+
+    parser.advance()
+    assert parser.dest() == "D"
+
+    parser.advance()
+    assert parser.dest() == "M"
+
+    parser.advance()
+    assert parser.dest() is None
+
+
+def test_dest_ignores_surrounding_whitespace(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "   MD = D + 1   \n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.dest() == "MD"
