@@ -359,3 +359,57 @@ def test_dest_ignores_surrounding_whitespace(tmp_path: Path) -> None:
     parser.advance()
 
     assert parser.dest() == "MD"
+
+
+def test_comp_returns_comp_part_when_dest_is_present(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D=A\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.comp() == "A"
+
+
+def test_comp_returns_comp_part_when_jump_is_present(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D;JGT\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.comp() == "D"
+
+
+def test_comp_returns_comp_part_when_dest_and_jump_are_present(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D=D+1;JGT\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.comp() == "D+1"
+
+
+def test_comp_tracks_current_command_after_multiple_advances(tmp_path: Path) -> None:
+    asm_file = write_asm(
+        tmp_path,
+        "D=A\n" "M=D+1\n" "0;JMP\n",
+    )
+
+    parser = Parser(asm_file)
+
+    parser.advance()
+    assert parser.comp() == "A"
+
+    parser.advance()
+    assert parser.comp() == "D+1"
+
+    parser.advance()
+    assert parser.comp() == "0"
+
+
+def test_comp_ignores_surrounding_whitespace(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "   D = M + 1 ; JGT   \n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.comp() == "M+1"

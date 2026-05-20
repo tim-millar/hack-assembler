@@ -67,5 +67,12 @@ class Parser:
 
         return current_command.split("=")[0]
 
-        if result:
-            return result.group(1)
+    def comp(self) -> str:
+        current_command = self._programme()[self.cursor]
+
+        dest_comp = current_command.split(";")[0]
+
+        if "=" in dest_comp:
+            return dest_comp.split("=")[1]
+
+        return dest_comp
