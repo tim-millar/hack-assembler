@@ -69,10 +69,17 @@ class Parser:
 
     def comp(self) -> str:
         current_command = self._programme()[self.cursor]
-
         dest_comp = current_command.split(";")[0]
 
         if "=" in dest_comp:
             return dest_comp.split("=")[1]
 
         return dest_comp
+
+    def jump(self) -> str | None:
+        current_command = self._programme()[self.cursor]
+
+        if ";" not in current_command:
+            return None
+
+        return current_command.split(";")[1]

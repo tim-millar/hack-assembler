@@ -413,3 +413,57 @@ def test_comp_ignores_surrounding_whitespace(tmp_path: Path) -> None:
     parser.advance()
 
     assert parser.comp() == "M+1"
+
+
+def test_jump_returns_jump_part_when_present(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D;JGT\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.jump() == "JGT"
+
+
+def test_jump_returns_jump_part_when_dest_is_also_present(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D=D+1;JGT\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.jump() == "JGT"
+
+
+def test_jump_returns_none_when_no_jump_part(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "D=A\n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.jump() is None
+
+
+def test_jump_tracks_current_command_after_multiple_advances(tmp_path: Path) -> None:
+    asm_file = write_asm(
+        tmp_path,
+        "D;JGT\n" "D=A\n" "0;JMP\n",
+    )
+
+    parser = Parser(asm_file)
+
+    parser.advance()
+    assert parser.jump() == "JGT"
+
+    parser.advance()
+    assert parser.jump() is None
+
+    parser.advance()
+    assert parser.jump() == "JMP"
+
+
+def test_jump_ignores_surrounding_whitespace(tmp_path: Path) -> None:
+    asm_file = write_asm(tmp_path, "   D = M + 1 ; JGT   \n")
+
+    parser = Parser(asm_file)
+    parser.advance()
+
+    assert parser.jump() == "JGT"
