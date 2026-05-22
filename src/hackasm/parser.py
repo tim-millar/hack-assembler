@@ -12,23 +12,6 @@ class Parser:
         self.currentCommand = None
         self.endOfFile = False
 
-    @cached_property
-    def _file_contents(self):
-        with self.file as f:
-            lines = f.read().decode("utf-8").splitlines()
-            print(lines)
-            return lines
-
-    def _ignore_line(s):
-        return s == "" or s.startswith("//") or s.startswith("\n") or s[:1].isspace()
-
-    def _programme(self):
-        return [
-            line.strip().replace(" ", "")
-            for line in self._file_contents
-            if not Parser._ignore_line(line.strip())
-        ]
-
     def hasMoreCommands(self) -> bool:
         if self.cursor is None:
             return len(self._programme()) > 0
@@ -83,3 +66,20 @@ class Parser:
             return None
 
         return current_command.split(";")[1]
+
+    @cached_property
+    def _file_contents(self):
+        with self.file as f:
+            lines = f.read().decode("utf-8").splitlines()
+            print(lines)
+            return lines
+
+    def _ignore_line(s):
+        return s == "" or s.startswith("//") or s.startswith("\n") or s[:1].isspace()
+
+    def _programme(self):
+        return [
+            line.strip().replace(" ", "")
+            for line in self._file_contents
+            if not Parser._ignore_line(line.strip())
+        ]
