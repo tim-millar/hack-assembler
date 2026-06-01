@@ -49,3 +49,19 @@ class Code:
         }
 
         return machine_code[assembly]
+
+    def jump(assembly: str | None) -> str:
+        if assembly is None:
+            return "000"
+
+        machine_code = {
+            "JGT": "001",
+            "JEQ": "010",
+            "JGE": "011",
+            "JLT": "100",
+            "JNE": "101",
+            "JLE": "110",
+            "JMP": "111",
+        }
+
+        return machine_code[assembly]

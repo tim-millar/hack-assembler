@@ -143,3 +143,35 @@ def test_comp_for_d_or_a() -> None:
 
 def test_comp_for_d_or_m() -> None:
     assert Code.comp("D|M") == "1010101"
+
+
+def test_jump_for_null_jump() -> None:
+    assert Code.jump(None) == "000"
+
+
+def test_jump_for_jgt() -> None:
+    assert Code.jump("JGT") == "001"
+
+
+def test_jump_for_jeq() -> None:
+    assert Code.jump("JEQ") == "010"
+
+
+def test_jump_for_jge() -> None:
+    assert Code.jump("JGE") == "011"
+
+
+def test_jump_for_jlt() -> None:
+    assert Code.jump("JLT") == "100"
+
+
+def test_jump_for_jne() -> None:
+    assert Code.jump("JNE") == "101"
+
+
+def test_jump_for_jle() -> None:
+    assert Code.jump("JLE") == "110"
+
+
+def test_jump_for_jmp() -> None:
+    assert Code.jump("JMP") == "111"
