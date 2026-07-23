@@ -1,5 +1,6 @@
 class AInstruction:
     def encode(instr):
         intInstr = int(instr)
-        binaryInt = "{0:016b}".format(intInstr)
-        return binaryInt
+        prefix = "0"
+        binaryInt = "{0:015b}".format(intInstr)
+        return prefix + binaryInt

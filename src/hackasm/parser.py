@@ -26,24 +26,27 @@ class Parser:
 
     def commandType(self) -> str:
         current = self._programme()[self.cursor]
+        current_command = current.split("//")[0].strip()
 
-        if current.startswith("@"):
+        if current_command.startswith("@"):
             return A_COMMAND
-        if current.startswith("(") and current.endswith(")"):
+        if current_command.startswith("(") and current_command.endswith(")"):
             return L_COMMAND
-        if all(c.isalpha() or c in "-+!01&;=" for c in current):
+        if all(c.isalpha() or c in "-+!01&;=" for c in current_command):
             return C_COMMAND
 
     def symbol(self) -> str | None:
         current = self._programme()[self.cursor]
+        current_command = current.split("//")[0].strip()
 
         if self.commandType() == A_COMMAND:
-            return current[1:]
+            return current_command[1:]
         if self.commandType() == L_COMMAND:
-            return current[1:-1]
+            return current_command[1:-1]
 
     def dest(self) -> str | None:
-        current_command = self._programme()[self.cursor]
+        current = self._programme()[self.cursor]
+        current_command = current.split("//")[0].strip()
 
         if "=" not in current_command:
             return None
@@ -51,7 +54,9 @@ class Parser:
         return current_command.split("=")[0]
 
     def comp(self) -> str:
-        current_command = self._programme()[self.cursor]
+        current = self._programme()[self.cursor]
+        current_command = current.split("//")[0].strip()
+
         dest_comp = current_command.split(";")[0]
 
         if "=" in dest_comp:
@@ -60,7 +65,8 @@ class Parser:
         return dest_comp
 
     def jump(self) -> str | None:
-        current_command = self._programme()[self.cursor]
+        current = self._programme()[self.cursor]
+        current_command = current.split("//")[0].strip()
 
         if ";" not in current_command:
             return None
